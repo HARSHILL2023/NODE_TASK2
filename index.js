@@ -1,6 +1,8 @@
-const experss = require("express")
+const express = require("express");
 
-const app = experss();
+const app = express();
+
+app.use(express.json()); 
 
 const products = [
     {
@@ -45,38 +47,93 @@ const products = [
     }
 ];
 
+
+// Home route
 app.get("/", (req, res) => {
     res.send("Express server is running");
 });
 
 
+// Get all products
 app.get("/products", (req, res) => {
-
     res.status(200).json(products);
 });
 
-app.get("/products/:id", (req, res) => {
-    const userId = Number(req.params.id);
-    const user = products.find(u => u.id === userId);
 
-    if (!user) {
-        return res.status(404).json({ message: "User not found" });
+// Get product by id
+app.get("/products/:id", (req, res) => {
+
+    const productId = Number(req.params.id);
+
+    const product = products.find(p => p.id === productId);
+
+    if (!product) {
+        return res.status(404).json({ message: "Product not found" });
     }
 
-    res.status(200).json(user);
+    res.status(200).json(product);
 });
 
 
-app.get("/products/category/:categoryName",(req,res)=>{
-            let store = req.params.categoryName;
-            let data= products.find(u=>u.category===store)
+// Get products by category
+app.get("/products/category/:categoryName", (req, res) => {
 
-            res.status(200).json(data);
+    const category = req.params.categoryName;
+
+    const data = products.filter(p => p.category === category);
+
+    res.status(200).json(data);
 });
 
-app.post()
 
+// Create new product
+app.post("/products", (req, res) => {
+
+    const newProduct = {
+
+        id: products.length + 1, 
+
+        name: req.body.name,
+        category: req.body.category,
+        price: req.body.price,
+        stock: req.body.stock,
+        rating: req.body.rating
+    };
+
+    products.push(newProduct);
+
+    res.status(201).json({
+        message: "Created successfully",
+        product: newProduct
+    });
+});
+
+app.put("/products/:id", (req, res) => {
+
+    const id = parseInt(req.params.id);
+
+    const index = products.findIndex(p => p.id === id);
+
+    if (index === -1) {
+        return res.status(404).json({ message: "Product not found" });
+    }
+
+    products[index] = {
+
+        id: id,
+
+        name: req.body.name,
+        category: req.body.category,
+        price: req.body.price,
+        stock: req.body.stock,
+        rating: req.body.rating
+
+    };
+
+    res.status(200).json(products[index]);
+
+});
 
 app.listen(3000, () => {
-    console.log("server is started hehehee in port 3000")
+    console.log("Server started on port 3000");
 });
