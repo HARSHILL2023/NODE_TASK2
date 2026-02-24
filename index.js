@@ -134,6 +134,40 @@ app.put("/products/:id", (req, res) => {
 
 });
 
+app.put("/products/:id/stock", (req, res) => {
+
+  const id = parseInt(req.params.id);
+
+  const product = products.find(p => p.id === id);
+
+  if (!product) {
+    return res.status(404).send("Product not found");
+  }
+
+  product.stock = req.body.stock;
+
+  res.status(200).json(product);
+
+});
+
+
+app.put("/products/:id/price", (req, res) => {
+
+  const id = parseInt(req.params.id);
+
+  const product = products.find(p => p.id === id);
+
+  if (!product) {
+    return res.status(404).send("Product not found");
+  }
+
+  product.price = req.body.price;
+
+  res.status(200).json(product);
+
+});
+
+
 app.listen(3000, () => {
     console.log("Server started on port 3000");
 });
